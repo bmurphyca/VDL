@@ -34,8 +34,6 @@ def getSpeed():
                 except:
                    print("This is an error message for try catch")
 
- 
- 
                 cmd = obd.commands.RPM # 4281.0 revolutions_per_minute 
                 response = connection.query(cmd)
                 print(2)
