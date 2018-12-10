@@ -13,7 +13,7 @@ print('Timestamp: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
 def getSpeed():
     connection = obd.OBD()
 
-    with open('car.csv', "a") as f:
+    with open('car.csv', "w") as f:
         f.write("Speed kpm,RPM,Air Flow g/ps,Coolant Temp °C,Engine Load %,02 B1S1 volts,Run Time S,Bio Pressure, xxx,Intake Temp °C, Fuel Level\n") # xxx
 
     while True:
