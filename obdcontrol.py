@@ -1,6 +1,7 @@
 # Asymmetric Technologies LLC, Blake Murphy
 # 11/16/18--11/20/18--11/28/18--11/29/18--11/30/18
 # 12/04/18--12/05/18--12/06/18--12/07/18--12/10/18
+# 12/11/18--
 
 import obd
 import time
@@ -14,7 +15,7 @@ def getSpeed():
     connection = obd.OBD()
 
     with open('car.csv', "w") as f:
-        f.write("Speed kpm,RPM,Air Flow g/ps,Coolant Temp °C,Engine Load %,02 B1S1 volts,Run Time S,Bio Pressure, xxx,Intake Temp °C, Fuel Level\n") # xxx
+        f.write("Speed kpm, RPM, Air Flow g/ps, Coolant Temp °C, Engine Load %, 02 B1S1 volts, Run Time S, Bio Pressure, Intake Temp °C, Fuel Level\n") # xxx
 
     while True:
 
@@ -32,10 +33,10 @@ def getSpeed():
                 print(response.value)
                 speed = response.value.magnitude
                 values.append("{0:.2f}".format(speed))
-  #              try:
-  #                 print("Functioning")
-  #              except:
-  #                 print("This is an error message for try catch")
+     #           try:
+      #              print("Functioning")
+     #           except:
+     #               print("This is an error message for try catch")
                 print()
 
                 cmd = obd.commands.RPM # 4281.0 revolutions_per_minute 
@@ -62,42 +63,12 @@ def getSpeed():
                    print("This is an error message for try catch")
                 print()
 
-                cmd = obd.commands.FUEL_PRESSURE # None
-                response = connection.query(cmd)
-                print("Fuel Pressure")
-                print(response.value)
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
-
-                cmd = obd.commands.INTAKE_PRESSURE # not supported, none
-                response = connection.query(cmd)
-                print("Intake Pressure")
-                print(response.value)
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()              
-
                 cmd = obd.commands.COOLANT_TEMP # works -14 DegC
                 response = connection.query(cmd)
                 print("Coolant Temp °C")
                 print(response.value)
                 DegC = response.value.magnitude
                 values.append("{0:.2f}".format(DegC))
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
-
-                cmd = obd.commands.PIDS_A # 10111110000110110011000000010011 bitarray
-                response = connection.query(cmd)
-                print("PIDS")        
-                print(response.value)     
                 try:
                    print("Functioning")
                 except:
@@ -132,16 +103,6 @@ def getSpeed():
                 print(response.value)
                 zvolt = response.value.magnitude
                 values.append("{0:.2f}".format(zvolt))
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
-
-                cmd = obd.commands.THROTTLE_POS # none not supported 
-                response = connection.query(cmd)
-                print("Rel Throttle Pos")
-                print(response.value)
                 try:
                    print("Functioning")
                 except:
@@ -218,16 +179,8 @@ def getSpeed():
                 response = connection.query(cmd)
                 print("Fuel Level Input %")        
                 print(response.value)
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
-
-                cmd = obd.commands.EVAP_VAPOR_PRESSURE # None
-                response = connection.query(cmd)
-                print("Evaporative System Vapor Pressure")
-                print(response.value)
+                juice = response.value.magnitude
+                values.append("{0:.2f}".format(juice))
                 try:
                    print("Functioning")
                 except:
@@ -236,7 +189,7 @@ def getSpeed():
 
                 f.write(",".join(str(value) for value in values) + "\n")
 
-        time.sleep(6)
+        time.sleep(0.05)
         # 1 hour = 3600 seconds 
         # 1 day =  86400 seconds
         # Todd wants micro-seconds (0.05)
