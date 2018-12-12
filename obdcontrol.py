@@ -1,198 +1,104 @@
 # Asymmetric Technologies LLC, Blake Murphy
 # 11/16/18--11/20/18--11/28/18--11/29/18--11/30/18
 # 12/04/18--12/05/18--12/06/18--12/07/18--12/10/18
-# 12/11/18--
+# 12/11/18--12/12/18
 
 import obd
 import time
 import datetime
 import csv
+import os.path
 
-print()
+print()  
 print('Timestamp: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
 
 def getSpeed():
-    connection = obd.OBD()
+   connection = obd.OBD()
+   fileName = "car.csv"
 
-    with open('car.csv', "w") as f:
-        f.write("Speed kpm, RPM, Air Flow g/ps, Coolant Temp °C, Engine Load %, 02 B1S1 volts, Run Time S, Bio Pressure, Intake Temp °C, Fuel Level\n") # xxx
+   if not os.path.isfile(fileName):
 
-    while True:
+      with open(fileName, "w") as f:
+         f.write("Time Stamp,Speed kpm,RPM,Air Flow g/ps,Coolant Temp °C,Engine Load %,Run Time Sec,Bio Pressure,Intake Temp °C,Fuel Level %\n") # xxx
 
-#       open file for appending w+
-        with open('car.csv', "a") as f:
-                values = []
+   dt = 0
+   n = 0
+   t = int(time.time())
 
-                print('Timestamp: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
- #              print("______________________________")
-                print()
+   while True:
 
-                cmd = obd.commands.SPEED # kph shown, can change to mph
-                response = connection.query(cmd)
-                print("Speed")
-                print(response.value)
-                speed = response.value.magnitude
-                values.append("{0:.2f}".format(speed))
-     #           try:
-      #              print("Functioning")
-     #           except:
-     #               print("This is an error message for try catch")
-                print()
+#     open file for appending w+
+      with open(fileName, "a") as f:
+         values = []
 
-                cmd = obd.commands.RPM # 4281.0 revolutions_per_minute 
-                response = connection.query(cmd)
-                print("RPM")
-                print(response.value)
-                rpm = response.value.magnitude
-                values.append("{0:.2f}".format(rpm))
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+         start = time.perf_counter()
 
-                cmd = obd.commands.MAF # 196.68 gps grams per second
-                response = connection.query(cmd)
-                print("Air Flow Rate/ grams per second")
-                print(response.value)
-                gps = response.value.magnitude
-                values.append("{0:.2f}".format(gps))
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+         timeStamp = datetime.datetime.now()
+         values.append(timeStamp)
+         print('Timestamp: {:%Y-%m-%d %H:%M:%S}\n'.format(timeStamp))
+         
+         speed = getValue("Speed", connection, obd.commands.SPEED)
+         values.append(speed)
 
-                cmd = obd.commands.COOLANT_TEMP # works -14 DegC
-                response = connection.query(cmd)
-                print("Coolant Temp °C")
-                print(response.value)
-                DegC = response.value.magnitude
-                values.append("{0:.2f}".format(DegC))
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+         rpm = getValue("Rpm", connection, obd.commands.RPM)
+         values.append(rpm)
 
-                cmd = obd.commands.ENGINE_LOAD # 19.607843137254903 percent
-                response = connection.query(cmd)
-                print("Engine Load")
-                print(response.value)
-                Eload = response.value.magnitude
-                values.append("{0:.2f}".format(Eload))
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+         maf = getValue("Air Flow g/ps", connection, obd.commands.MAF)
+         values.append(maf)
 
-                cmd = obd.commands.O2_SENSORS # ((), (False, False, False, False), (False, False, False, True))
-                response = connection.query(cmd)
-                print("O2 Sensors Boolean")
-                print(response.value)
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+         degC = getValue("Coolant Temp °C", connection, obd.commands.COOLANT_TEMP)
+         values.append(degC)
 
-                cmd = obd.commands.O2_B1S1 # 0.01 volt
-                response = connection.query(cmd)
-                print("Bank 1/Sensor 1 Voltage")        
-                print(response.value)
-                zvolt = response.value.magnitude
-                values.append("{0:.2f}".format(zvolt))
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+         Eload = getValue("Engine Load %", connection, obd.commands.ENGINE_LOAD)
+         values.append(round(Eload, 2))
 
-                cmd = obd.commands.WARMUPS_SINCE_DTC_CLEAR # None
-                response = connection.query(cmd)
-                print("Warm Since DTC Clear")
-                print(response.value)
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+         runtm = getValue("Run Time Sec", connection, obd.commands.RUN_TIME)
+         values.append(runtm)
+  
+         barp = getValue("Bio Pressure", connection, obd.commands.BAROMETRIC_PRESSURE)
+         values.append(barp)
 
-                cmd = obd.commands.RUN_TIME # 600 seconds
-                response = connection.query(cmd)
-                print("Run Time/Seconds")        
-                print(response.value)
-                runtm = response.value.magnitude
-                values.append("{0:.1f}".format(runtm))
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+         DegI = getValue("Intake Temp °C", connection, obd.commands.INTAKE_TEMP)
+         values.append(DegI)
 
-                cmd = obd.commands.TIME_SINCE_DTC_CLEARED # None
-                response = connection.query(cmd)
-                print("Time Since Codes Cleared")
-                print(response.value)
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+         juice = getValue("Fuel Level", connection, obd.commands.FUEL_LEVEL)
+         values.append(round(juice, 2))
 
-                cmd = obd.commands.BAROMETRIC_PRESSURE # 100 kilopascal
-                response = connection.query(cmd)
-                print("Barometric Pressure")
-                print(response.value)
-                barp = response.value.magnitude
-                values.append("{0:.2f}".format(barp))
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+         f.write(",".join(str(value) for value in values) + "\n")
 
-                cmd = obd.commands.GET_CURRENT_DTC # []
-                response = connection.query(cmd)
-                print("Current DTC")
-                print(response.value)
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
 
-                cmd = obd.commands.INTAKE_TEMP # 25 degC
-                response = connection.query(cmd)
-                print("Intake Temp °C")
-                print(response.value)
-                DegI = response.value.magnitude
-                values.append("{0:.2f}".format(DegI))
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+         dt += time.perf_counter() - start
+         n += 1
+         if int(time.time()) - t == 5:
+            dt /= n
+            print("\ndt = {}".format(dt))
+            dt = 0
+            n = 0
+            t = int(time.time())
 
-                cmd = obd.commands.FUEL_LEVEL # 50.19607843137255 percent 50.2 on chart
-                response = connection.query(cmd)
-                print("Fuel Level Input %")        
-                print(response.value)
-                juice = response.value.magnitude
-                values.append("{0:.2f}".format(juice))
-                try:
-                   print("Functioning")
-                except:
-                   print("This is an error message for try catch")
-                print()
+      time.sleep(0.05)
 
-                f.write(",".join(str(value) for value in values) + "\n")
+def getValue(commandName, connection, cmd):
+      print(commandName)         
+      try:
+         response = connection.query(cmd)
+         print(response.value)
+         value = response.value.magnitude
+         return value
+      except Exception as e:
+         print("Error occured while reading {}: {}".format(commandName, e))
+         return "Error"
+      print()
 
-        time.sleep(0.05)
-        # 1 hour = 3600 seconds 
-        # 1 day =  86400 seconds
-        # Todd wants micro-seconds (0.05)
+def timeTest(): # testing speed
+      connection = obd.OBD()
+      start = time.perf_counter()
+      for i in range(250):
+         response = connection.query(obd.commands.SPEED) # SPEED can be set to other commands
+         value = response.value.magnitude
+
+      dt = (time.perf_counter() - start) / (250)
+      print("dt = {}".format(dt))
 
 if __name__ == '__main__':
       getSpeed()
