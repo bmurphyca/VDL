@@ -1,7 +1,7 @@
 # Asymmetric Technologies LLC, Blake Murphy
 # 11/16/18--11/20/18--11/28/18--11/29/18--11/30/18
 # 12/04/18--12/05/18--12/06/18--12/07/18--12/10/18
-# 12/11/18--12/12/18
+# 12/11/18--12/12/18--12/14/18
 
 import obd
 import time
@@ -51,6 +51,7 @@ def getSpeed():
 
          Eload = getValue("Engine Load %", connection, obd.commands.ENGINE_LOAD)
          values.append(round(Eload, 2))
+       # values.append(Eload)
 
          runtm = getValue("Run Time Sec", connection, obd.commands.RUN_TIME)
          values.append(runtm)
@@ -63,9 +64,9 @@ def getSpeed():
 
          juice = getValue("Fuel Level", connection, obd.commands.FUEL_LEVEL)
          values.append(round(juice, 2))
+       #  values.append(juice)
 
          f.write(",".join(str(value) for value in values) + "\n")
-
 
          dt += time.perf_counter() - start
          n += 1
